@@ -23,7 +23,6 @@ using **Streamlit**, **FastAPI**, and **real IBM Quantum hardware**.
 - Qiskit & Qiskit Runtime
 - IBM Quantum
 - Streamlit
-- FastAPI
 - NumPy, SciPy, Seaborn
 
 ---
