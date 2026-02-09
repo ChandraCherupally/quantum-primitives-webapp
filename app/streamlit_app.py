@@ -51,7 +51,7 @@ if project == "Quantum Random Number Generator":
     bits = st.slider(
         "Number of qubits",
         min_value=2,
-        max_value=50,
+        max_value=20,
         value=5,
     )
 
@@ -74,7 +74,6 @@ if project == "Quantum Random Number Generator":
         # Real Quantum Hardware
         # -----------------------------
         else:
-            ##st.write("API key loaded:", os.getenv("IBM_QUANTUM_API_KEY") is not None)
             if not os.getenv("IBM_QUANTUM_API_KEY"):
                 st.error(
                     "IBM Quantum API key is not configured.\n\n"

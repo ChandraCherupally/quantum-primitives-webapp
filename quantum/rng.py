@@ -29,16 +29,18 @@ def rng_hardware(num_bits):
     )
 
     backend = service.least_busy(operational=True)
+    print(backend.name)
 
-    qc = QuantumCircuit(num_bits)
-    qc.h(range(num_bits))
-    qc.measure_all()
+    qc = build_rng_circuit(num_bits)
+
+    pm = generate_preset_pass_manager(
+    backend=backend, optimization_level=3
+    )
+    isa_qc = pm.run(qc)
 
     sampler = SamplerV2(backend)
-    job = sampler.run([qc], shots=1)
+    job = sampler.run([isa_qc], shots=1)
     result = job.result()
 
-    bitstring = list(result.quasi_dists[0].keys())[0]
-    value = int(bitstring, 2)
-
-    return bitstring, value
+    bitstring = next(iter(result[0].data.meas.get_counts()))
+    return bitstring, int(bitstring, 2)
