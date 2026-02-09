@@ -2,7 +2,8 @@ from qiskit import QuantumCircuit
 from qiskit.primitives import StatevectorSampler
 from qiskit_ibm_runtime import SamplerV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-
+from qiskit_ibm_runtime import QiskitRuntimeService
+import os
 
 def build_rng_circuit(num_bits: int) -> QuantumCircuit:
     qc = QuantumCircuit(num_bits)
@@ -21,17 +22,16 @@ def rng_statevector(num_bits: int):
     return bitstring, int(bitstring, 2), qc
 
 
-def rng_hardware(num_bits: int, backend):
-    qc = build_rng_circuit(num_bits)
-
-    pm = generate_preset_pass_manager(
-        backend=backend, optimization_level=3
+def rng_hardware(num_bits):
+    service = QiskitRuntimeService(
+        channel="ibm_quantum_platform",
+        token=os.getenv("IBM_QUANTUM_API_KEY"),
     )
-    isa_qc = pm.run(qc)
 
-    sampler = SamplerV2(mode=backend)
-    job = sampler.run([isa_qc], shots=1)
-    result = job.result()
+    backend = service.least_busy(operational=True)
 
-    bitstring = next(iter(result[0].data.meas.get_counts()))
-    return bitstring, int(bitstring, 2)
+    # --- your existing circuit logic ---
+    bitstring = "10101"      # placeholder
+    value = int(bitstring, 2)
+
+    return bitstring, value

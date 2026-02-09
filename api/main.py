@@ -10,7 +10,9 @@ class RNGRequest(BaseModel):
 
 
 def get_backend():
-    service = QiskitRuntimeService(channel="ibm_quantum_platform")
+    
+    service = QiskitRuntimeService(channel="ibm_quantum_platform",
+                               )
     return service.least_busy(operational=True)
 
 
