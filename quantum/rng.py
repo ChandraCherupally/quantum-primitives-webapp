@@ -30,8 +30,15 @@ def rng_hardware(num_bits):
 
     backend = service.least_busy(operational=True)
 
-    # --- your existing circuit logic ---
-    bitstring = "10101"      # placeholder
+    qc = QuantumCircuit(num_bits)
+    qc.h(range(num_bits))
+    qc.measure_all()
+
+    sampler = SamplerV2(backend)
+    job = sampler.run([qc], shots=1)
+    result = job.result()
+
+    bitstring = list(result.quasi_dists[0].keys())[0]
     value = int(bitstring, 2)
 
     return bitstring, value
