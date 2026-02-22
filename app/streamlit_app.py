@@ -60,10 +60,16 @@ if project == "Quantum Random Number Generator":
         ["Simulator", "Real Quantum Hardware"],
     )
 
+    # ---------------------------------
+    # Initialize counter (once/session)
+    # ---------------------------------
+    if "hardware_runs" not in st.session_state:
+        st.session_state.hardware_runs = 0
+
     if st.button("Generate"):
 
         # -----------------------------
-        # Simulator
+        # Simulator (Unlimited)
         # -----------------------------
         if mode == "Simulator":
             b, v, _ = rng_statevector(bits)
@@ -71,9 +77,18 @@ if project == "Quantum Random Number Generator":
             st.metric("Random Value", v)
 
         # -----------------------------
-        # Real Quantum Hardware
+        # Real Quantum Hardware (LIMITED)
         # -----------------------------
         else:
+
+            # 🚫 Limit check
+            if st.session_state.hardware_runs >= 2:
+                st.error(
+                    "❌ You have exceeded the allowed limit for Real Quantum Hardware "
+                    "(maximum 2 executions per session)."
+                )
+                st.stop()
+
             if not os.getenv("IBM_QUANTUM_API_KEY"):
                 st.error(
                     "IBM Quantum API key is not configured.\n\n"
@@ -89,8 +104,17 @@ if project == "Quantum Random Number Generator":
             with st.spinner("Running on quantum hardware..."):
                 b, v = rng_hardware(bits)
 
+            # ✅ Increment counter AFTER success
+            st.session_state.hardware_runs += 1
+
             st.success(f"Bitstring: {b}")
             st.metric("Random Value", v)
+
+            st.caption(
+                f"Hardware runs used: {st.session_state.hardware_runs}/2"
+            )
+
+
 
 # =================================================
 # PROJECT 2: Quantum Height & Weight Correlation
